@@ -26,11 +26,25 @@ class Ball {
             ctx.beginPath();
             ctx.fillStyle = "white";
             ctx.ellipse(this.x, this.y + whiteRatio, this.radius - 1, this.radius - whiteRatio, Math.PI * 2, 0, Math.PI + (Math.PI * 0) / 2);
+            ctx.stroke();
             ctx.fill();
             ctx.beginPath();
             ctx.ellipse(this.x, this.y - whiteRatio, this.radius - 1, this.radius - whiteRatio, Math.PI, 0, Math.PI + (Math.PI * 0) / 2);
             ctx.fill();
+            ctx.stroke();
         }
     }
 
+    move(xDir, yDir) {
+        this.x += xDir;
+        this.y += yDir;
+    }
+    
+    getDeltaPos(xFinal, yFinal) {
+        const deltaX = xFinal - this.x;
+        const deltaY = yFinal - this.y;
+
+        return [deltaX, deltaY];
+    }
+        
 }

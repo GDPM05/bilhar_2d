@@ -11,12 +11,51 @@ window.addEventListener('load', (event) => {
 
     // buracos da mesa
     tableHoles(ctx, width, height);
+    
+    const [balls, whiteBall] = initiateGame(ctx, width, height);
+    console.log(balls, whiteBall);
 
-    //drawTableTriangle(ctx, width, height);
-    //drawTriangleGrid(ctx, width, height);
-    const positions = mapBallsInitialPosition(ctx, width, height);
-    generateBalls(ctx, positions);
+    console.log(balls);
+
+    setInterval(function() {
+        clearPlane(ctx, width, height);
+        tableHoles(ctx, width, height);
+
+        whiteBall.draw(ctx);
+
+        balls.forEach(ball => {
+            ball.draw(ctx);
+        });
+        
+        const arrowLen = 50;
+
+        const [deltaX, deltaY] = whiteBall.getDeltaPos(window.mouseX, window.mouseY);
+
+        let rad = Math.atan2(deltaY, deltaX);
+    
+        const toX = whiteBall.x + (arrowLen * Math.cos(rad));
+        const toY = whiteBall.y + (arrowLen * Math.sin(rad));
+
+        ctx.beginPath();
+        canvas_arrow(ctx, whiteBall.x, whiteBall.y, toX, toY);
+        ctx.stroke();
+
+    }, 16);
 });
+
+function clearPlane(ctx, w, h) {
+    ctx.clearRect(0, 0, w, h);
+}
+
+function initiateGame(ctx, w, h) {
+    const positions = mapBallsInitialPosition(ctx, w, h);
+    // drawTableTriangle(ctx, w, h);
+    // drawTriangleGrid(ctx, w, h);
+    const balls = generateBalls(ctx, positions);
+    const whiteBall = generateWhiteBall(ctx, w, h);
+
+    return [balls, whiteBall]
+}
 
 function tableHoles(ctx, w, h) {
     const holeRadius = 50;
@@ -94,8 +133,8 @@ function mapBallsInitialPosition(ctx, w, h) {
             const gridXShift = (colN > 1) ? - 4 * (colN - 1) : 0;
             console.log(gridY, (gridStart.x + i) + ballRadius);                
 
-            const finalX = (gridStart.x + i) + ballRadius + gridXShift;
-            const finalY = (gridY + ((ballRadius * 2) * j)) + ballRadius;
+            const finalX = Math.floor((gridStart.x + i) + ballRadius + gridXShift);
+            const finalY = (gridY + ((ballRadius * 2) * j)) + ballRadius - 7;
 
             ctx.arc(
                 (gridStart.x + i) + ballRadius + gridXShift,
@@ -119,24 +158,51 @@ function generateBalls(ctx, positionsList) {
 
     shuffleBalls(positionsList);
 
+    let ballsMap = [];
+
     for (let i = 1; i < 16; i++) {
         const p = positionsList[i - 1];
         const ball = new Ball(p.x, p.y, colors[i-1], (i <= 8) ? "small" : "big", i); 
-        ball.draw(ctx);
+        ballsMap.push(ball);
     }
 
-}
+    ballsMap = bubbleSort(ballsMap);
+    
+    if(ballsMap[10].number !== 8)  {
+        let eightBallPos = 0;
+        for(let i = 0; i < ballsMap.length; i++) {
+            if (ballsMap[i].number == 8)
+                eightBallPos = i;
+        }
 
-function shuffleBalls(array) {
-    let n = array.length;
+        console.log(ballsMap[10], ballsMap[eightBallPos]);
 
-    while (n > 1) {
-        
-        const randomIndex = Math.floor(Math.random() * n);
-        n--;
-
-        [array[n], array[randomIndex]] = [array[randomIndex], array[n]];
+        let temp = ballsMap[10];
+        let tempX = temp.x;
+        let tempY = temp.y;
+        let tempEight = ballsMap[eightBallPos];
+        temp.x = tempEight.x;
+        temp.y = tempEight.y;
+        tempEight.x = tempX;
+        tempEight.y = tempY;
+        ballsMap[10] = tempEight;
+        ballsMap[eightBallPos] = temp;
     }
     
-    return array;
+    return ballsMap;
 }
+
+function generateWhiteBall(ctx, w, h) {
+    
+    const ballRadius = 15;
+
+    const ballX = w - (w / 5);
+    const ballY = (h / 2) - (ballRadius / 2);
+
+    const whiteBall = new Ball(ballX, ballY, "white", "whiteball", "");
+    whiteBall.draw(ctx);
+
+    return whiteBall;
+}
+
+
