@@ -63,18 +63,23 @@ function bubbleSort(array) {
 document.addEventListener('wheel', function(event) {
     const reductionRate = 10;
     const dir = event.deltaY < 0;
-
-    const parentEl = document.getElementsByClassName("cue")[0];
-    const parentWidth = parentEl.getBoundingClientRect().width - 2; // -2 referente à border de 1 pixel
     
-    const el = document.getElementsByClassName("cue_fill")[0];
+    const parentsWidth = document.getElementById("cue").offsetWidth - 2;
+    console.log(parentsWidth);
+    const currentCueWidth = document.getElementById("cue_fill").offsetWidth;
+    if(dir) {
+        if(currentCueWidth == parentsWidth)
+            return;
 
-    if (dir) 
-        el.style.width = el.getBoundingClientRect().width * 1.1;
-    else
-        el.style.width = el.getBoundingClientRect().width / 1.1;
-    
-    console.log(el.getBoundingClientRect().width);
+        const value = currentCueWidth + parentsWidth / reductionRate;
+        document.getElementById("cue_fill").style.width = value + "px";
+    } else {
+        if(currentCueWidth == 0) 
+            return;
+        
+        const value = currentCueWidth - parentsWidth / reductionRate;
+        document.getElementById("cue_fill").style.width = value + "px";
+    }
 });
 
 document.addEventListener('mousemove', function(event) {

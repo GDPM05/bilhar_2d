@@ -1,4 +1,6 @@
 
+const BALL_MASS = 0.17;
+
 window.addEventListener('load', (event) => {
     console.log("Page fully loaded.");
 
@@ -41,6 +43,10 @@ window.addEventListener('load', (event) => {
         ctx.stroke();
 
     }, 16);
+
+    window.addEventListener("click", function(event) {
+
+    });
 });
 
 function clearPlane(ctx, w, h) {
