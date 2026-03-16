@@ -3,7 +3,7 @@ const BALL_MASS = 0.17;
 
 window.addEventListener('load', (event) => {
     console.log("Page fully loaded.");
-
+    
     const canvas = document.getElementById("mesa");
     const ctx = canvas.getContext("2d");
 
@@ -14,11 +14,16 @@ window.addEventListener('load', (event) => {
     // buracos da mesa
     tableHoles(ctx, width, height);
     
+    let mouseMove = true;
+
     const [balls, whiteBall] = initiateGame(ctx, width, height);
     console.log(balls, whiteBall);
 
-    console.log(balls);
-
+    let toX;
+    let toY;
+    
+    let mouseStart;
+    let mouseEnd;
     setInterval(function() {
         clearPlane(ctx, width, height);
         tableHoles(ctx, width, height);
@@ -28,25 +33,33 @@ window.addEventListener('load', (event) => {
         balls.forEach(ball => {
             ball.draw(ctx);
         });
+
+        if(mouseMove) {
+
+            const arrowLen = 50;
+
+            const [deltaX, deltaY] = whiteBall.getDeltaPos(window.mouseX, window.mouseY);
+
+            let rad = Math.atan2(deltaY, deltaX);
         
-        const arrowLen = 50;
+            toX = whiteBall.x + (arrowLen * Math.cos(rad));
+            toY = whiteBall.y + (arrowLen * Math.sin(rad));
 
-        const [deltaX, deltaY] = whiteBall.getDeltaPos(window.mouseX, window.mouseY);
-
-        let rad = Math.atan2(deltaY, deltaX);
-    
-        const toX = whiteBall.x + (arrowLen * Math.cos(rad));
-        const toY = whiteBall.y + (arrowLen * Math.sin(rad));
+        }
 
         ctx.beginPath();
         canvas_arrow(ctx, whiteBall.x, whiteBall.y, toX, toY);
         ctx.stroke();
+        
+        window.addEventListener("mousedown", function(event) {
+            if (mouseStart != null) 
+                mouseStart = window.mouseX;
 
-    }, 16);
 
-    window.addEventListener("click", function(event) {
+            console.log("ola crida");
+        });
 
-    });
+    }, 16); 
 });
 
 function clearPlane(ctx, w, h) {
