@@ -1,5 +1,6 @@
 
-const BALL_MASS = 0.17;
+const CUE_MAX_PULL = 400;
+const CUE_MAX_FORCE = 3100;
 
 window.addEventListener('load', (event) => {
     console.log("Page fully loaded.");
@@ -24,6 +25,9 @@ window.addEventListener('load', (event) => {
     
     let mouseStart;
     let mouseEnd;
+
+    let forcePercentage;
+
     setInterval(function() {
         clearPlane(ctx, width, height);
         tableHoles(ctx, width, height);
@@ -45,21 +49,40 @@ window.addEventListener('load', (event) => {
             toX = whiteBall.x + (arrowLen * Math.cos(rad));
             toY = whiteBall.y + (arrowLen * Math.sin(rad));
 
+        } else {
+            mouseEnd = window.mouseX;
+            
+            const distanceTraveled = Math.min(mouseEnd - mouseStart, CUE_MAX_PULL);
+
+            if (0 < distanceTraveled) {
+                console.log(distanceTraveled);
+                forcePercentage = (distanceTraveled / CUE_MAX_PULL) * 100;
+                console.log(forcePercentage);
+                window.fillCuePercentage(forcePercentage);
+            }   
+                
         }
 
         ctx.beginPath();
         canvas_arrow(ctx, whiteBall.x, whiteBall.y, toX, toY);
         ctx.stroke();
-        
-        window.addEventListener("mousedown", function(event) {
-            if (mouseStart != null) 
-                mouseStart = window.mouseX;
-
-
-            console.log("ola crida");
-        });
-
+            
     }, 16); 
+
+    window.addEventListener("mousedown", function(event){
+        mouseMove = false;
+        mouseStart = window.mouseX;
+    });
+
+    window.addEventListener("mouseup", function(event) {
+        mouseMove = true;
+        document.getElementById("cue_fill").style.width = "0%";
+    
+        console.log("force: ", Math.min((forcePercentage / 100), 1));
+
+        const cue_hit_force = CUE_MAX_FORCE * Math.min((forcePercentage / 100), 1);
+        console.log(whiteBall.calculateAcceleration(cue_hit_force));
+    }); 
 });
 
 function clearPlane(ctx, w, h) {

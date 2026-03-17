@@ -7,7 +7,9 @@ class Ball {
         this.color = color;
         this.type = type;
         this.number = number;
+        
         this.radius = 15;
+        this.ball_mass = 0.17; // quilogramas
     }
 
     draw(ctx) {
@@ -46,5 +48,26 @@ class Ball {
 
         return [deltaX, deltaY];
     }
-        
+       
+
+    calculateAcceleration(cue_hit_force) {
+        const acceleration = cue_hit_force * this.ball_mass;
+        return acceleration;
+    }
+
+    calculateSlideDrag() {
+        const kinetic_friction = 0.2;
+        const g = 9.8;
+
+        const drag = kinetic_friction * this.ball_mass * g;
+        return drag;
+    }
+
+    calculateRollDrag() {
+        const roll_drag = 0.015;
+        const g = 9.8;
+
+        const drag = roll_drag * this.ball_mass * g;
+        return drag;
+    }
 }

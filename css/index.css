@@ -21,7 +21,8 @@ body {
 }
 
 #cue_fill {
-    width: 90%;
+    width: 20%;
     height: 100%;
     background-color: blue;
+    transform: rotateX(-180deg);
 }

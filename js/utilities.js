@@ -60,6 +60,10 @@ function bubbleSort(array) {
     return array;
 }
 
+window.fillCuePercentage = function(percentage) {
+    document.getElementById("cue_fill").style.width = percentage + "%";
+}
+
 document.addEventListener('wheel', function(event) {
     const reductionRate = 10;
     const dir = event.deltaY < 0;
