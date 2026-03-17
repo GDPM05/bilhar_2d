@@ -9,7 +9,20 @@ class Ball {
         this.number = number;
         
         this.radius = 15;
-        this.ball_mass = 0.17; // quilogramas
+        this.ball_mass = 0.017; // gramas
+        this.moving = false;
+        this.xAcceleration = 0;
+        this.yAcceleration = 0;
+    }
+    
+    update() {
+        
+        if(this.moving) {
+            
+            this.x += this.xAcceleration;
+            this.y += this.yAcceleration;
+        }
+
     }
 
     draw(ctx) {

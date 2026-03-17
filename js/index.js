@@ -27,6 +27,8 @@ window.addEventListener('load', (event) => {
     let mouseEnd;
 
     let forcePercentage;
+    
+    let shotAngle;
 
     setInterval(function() {
         clearPlane(ctx, width, height);
@@ -38,16 +40,18 @@ window.addEventListener('load', (event) => {
             ball.draw(ctx);
         });
 
+        whiteBall.update();
+
         if(mouseMove) {
 
             const arrowLen = 50;
 
             const [deltaX, deltaY] = whiteBall.getDeltaPos(window.mouseX, window.mouseY);
 
-            let rad = Math.atan2(deltaY, deltaX);
+            shotAngle = Math.atan2(deltaY, deltaX);
         
-            toX = whiteBall.x + (arrowLen * Math.cos(rad));
-            toY = whiteBall.y + (arrowLen * Math.sin(rad));
+            toX = whiteBall.x + (arrowLen * Math.cos(shotAngle));
+            toY = whiteBall.y + (arrowLen * Math.sin(shotAngle));
 
         } else {
             mouseEnd = window.mouseX;
@@ -55,9 +59,7 @@ window.addEventListener('load', (event) => {
             const distanceTraveled = Math.min(mouseEnd - mouseStart, CUE_MAX_PULL);
 
             if (0 < distanceTraveled) {
-                console.log(distanceTraveled);
                 forcePercentage = (distanceTraveled / CUE_MAX_PULL) * 100;
-                console.log(forcePercentage);
                 window.fillCuePercentage(forcePercentage);
             }   
                 
@@ -79,14 +81,43 @@ window.addEventListener('load', (event) => {
         document.getElementById("cue_fill").style.width = "0%";
     
         console.log("force: ", Math.min((forcePercentage / 100), 1));
-
         const cue_hit_force = CUE_MAX_FORCE * Math.min((forcePercentage / 100), 1);
-        console.log(whiteBall.calculateAcceleration(cue_hit_force));
+
+        const [forceX, forceY] = calculateForceVector(cue_hit_force, shotAngle);
+    
+        console.log(forceX, forceY);
+
+        console.log("AccelerationX: ", whiteBall.calculateAcceleration(forceX));
+        console.log("AccelerationY: ", whiteBall.calculateAcceleration(forceY));
+        console.log("SlideDrag: ", whiteBall.calculateSlideDrag());
+        console.log("RollDrag: ", whiteBall.calculateRollDrag());
+
+        whiteBall.moving = true;
+        whiteBall.xAcceleration = whiteBall.calculateAcceleration(forceX);
+        whiteBall.yAcceleration = whiteBall.calculateAcceleration(forceY);
+
     }); 
+
 });
 
 function clearPlane(ctx, w, h) {
     ctx.clearRect(0, 0, w, h);
+}
+
+function calculateForceVector(cue_force, angle) {
+    
+    /*
+     * Formula:
+     *  
+     * Fx = F * cos(angulo)
+     * Fy = F * sin(angulo)
+     *
+     */
+
+    const Fx = cue_force * Math.cos(angle);
+    const Fy = cue_force * Math.sin(angle);
+    
+    return [Fx, Fy];
 }
 
 function initiateGame(ctx, w, h) {
