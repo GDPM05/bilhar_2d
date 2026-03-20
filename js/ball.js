@@ -13,16 +13,57 @@ class Ball {
         this.moving = false;
         this.xAcceleration = 0;
         this.yAcceleration = 0;
+
+        this.xDirection = 1;
+        this.yDirection = 1;
+
+        this.startedMoving;
+        this.stoppedMoving;
     }
     
     update() {
-        
+         
         if(this.moving) {
+            this.x += this.xAcceleration * this.xDirection;
+            this.y += this.yAcceleration * this.yDirection;
+           
+            const slideDrag = this.calculateSlideDrag();
+
+            if(this.xAcceleration < 0) {
+                this.xAcceleration *= slideDrag;
+            } else {
+                this.xAcceleration /= slideDrag;
+            }
+
+            if(this.yAcceleration < 0) {
+                this.yAcceleration *= slideDrag;
+            } else {
+                this.yAcceleration /= slideDrag;
+            }
             
-            this.x += this.xAcceleration;
-            this.y += this.yAcceleration;
+            if (this.xAcceleration > -1 && this.xAcceleration < 0)
+                this.xAcceleration = 0;
+            if (this.yAcceleration > -1 && this.yAcceleration < 0)
+                this.yAcceleration = 0;
+
+
+            if(this.xAcceleration == 0 && this.yAcceleration == 0) {
+                this.xDirection = 1;
+                this.yDirection = 1;
+                this.moving = false;
+            }
+    
         }
 
+    }
+
+    checkCollisions(width, height) {
+        if(this.x <= 0 + this.radius || this.x >= width - this.radius) {
+            this.xDirection *= -1;
+        } 
+        if(this.y <= 0 + this.radius || this.y >= height - this.radius) {
+            this.yDirection *= -1;
+        }
     }
 
     draw(ctx) {
@@ -69,7 +110,7 @@ class Ball {
     }
 
     calculateSlideDrag() {
-        const kinetic_friction = 0.2;
+        const kinetic_friction = 2;
         const g = 9.8;
 
         const drag = kinetic_friction * this.ball_mass * g;

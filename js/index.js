@@ -41,8 +41,8 @@ window.addEventListener('load', (event) => {
         });
 
         whiteBall.update();
-
-        if(mouseMove) {
+        whiteBall.checkCollisions(width, height);
+        if(mouseMove && !whiteBall.moving) {
 
             const arrowLen = 50;
 
@@ -52,6 +52,10 @@ window.addEventListener('load', (event) => {
         
             toX = whiteBall.x + (arrowLen * Math.cos(shotAngle));
             toY = whiteBall.y + (arrowLen * Math.sin(shotAngle));
+
+            ctx.beginPath();
+            canvas_arrow(ctx, whiteBall.x, whiteBall.y, toX, toY);
+            ctx.stroke();
 
         } else {
             mouseEnd = window.mouseX;
@@ -65,10 +69,7 @@ window.addEventListener('load', (event) => {
                 
         }
 
-        ctx.beginPath();
-        canvas_arrow(ctx, whiteBall.x, whiteBall.y, toX, toY);
-        ctx.stroke();
-            
+                    
     }, 16); 
 
     window.addEventListener("mousedown", function(event){
@@ -88,7 +89,7 @@ window.addEventListener('load', (event) => {
         console.log(forceX, forceY);
 
         console.log("AccelerationX: ", whiteBall.calculateAcceleration(forceX));
-        console.log("AccelerationY: ", whiteBall.calculateAcceleration(forceY));
+        console.log("AccelerationY: ", whiteBall.calculateAcceleration(forceX));
         console.log("SlideDrag: ", whiteBall.calculateSlideDrag());
         console.log("RollDrag: ", whiteBall.calculateRollDrag());
 
